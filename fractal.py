@@ -1,15 +1,17 @@
 import numpy as np
 import matplotlib.pyplot as plt
-from matplotlib.animation import FuncAnimation
-import itertools
+import itertools, sys
+import matplotlib as mpl
 
-width=500
+mpl.use('Cairo')
 
-# Create new Figure and an Axes which fills it.
-fig = plt.figure(figsize=(7, 7))
+width=100
+corner=width/2
+
+fig = plt.figure(figsize=(25, 25))
 ax = fig.add_axes([0, 0, 1, 1], frameon=False)
-ax.set_xlim(-width/2, width/2), ax.set_xticks([])
-ax.set_ylim(-width/2, width/2), ax.set_yticks([])
+ax.set_xlim(-corner, corner), ax.set_xticks([])
+ax.set_ylim(-corner, corner), ax.set_yticks([])
 
 x_now = 0
 y_now = 0
@@ -17,22 +19,35 @@ y_now = 0
 x=[]
 y=[]
 
-with open("/data/work/share/AK58/FINAL/v1/AK58_chr1B_v5/AK58_chr1B_v5.fa", "r") as fh:
-    lines = fh.readlines()
-    lines = lines[1:50000]
-    for line in lines:
-        for bp in line:
-            if bp == "A":
-                x_now = (x_now + 1) % width
-            elif bp == "T":
-                x_now = (x_now - 1) % width
-            elif bp == "C":
-                y_now = (y_now + 1) % width
-            elif bp == "G":
-                y_now = (y_now - 1) % width
-            x.append(x_now)
-            y.append(y_now)
+# expects a file containing a string of ACGT...
+with open(sys.argv[1], "r") as fh:
+    seq = fh.readline().strip()
+    size = len(seq)
+    count = 0
+    for bp in seq:
+        if bp == "A":
+            x_now = (corner-x_now)/2
+            y_now = (corner-y_now)/2
+        elif bp == "T":
+            x_now = (-corner-x_now)/2
+            y_now = (corner-y_now)/2
+        elif bp == "C":
+            x_now = (corner-x_now)/2
+            y_now = (-corner-y_now)/2
+        elif bp == "G":
+            x_now = (-corner-x_now)/2
+            y_now = (-corner-y_now)/2
+        x.append(x_now)
+        y.append(y_now)
+        count += 1
+        if (count % 100000) == 0:
+            sys.stdout.write(".")
+            sys.stdout.flush()
 
-plt.scatter([a-(width/2) for a in x], [b-(width/2) for b in y], alpha=.01, s=3)
+ax.plot([round(a,2) for a in x],
+        [round(b,2) for b in y],
+        'b,', # blue pixels
+        alpha=.5,
+        antialiased=False)
 
-plt.show()
+plt.savefig('cairo.png')

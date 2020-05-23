@@ -57,6 +57,22 @@ args = parser.parse_args()
 
 print(mpl.get_backend())
 
+def calculateNext(bp, x_now, y_now, corner, factor):
+    x_next = x_now
+    y_next = y_now
+    if bp == "T": # top right
+        x_next += (corner-x_now)/factor
+        y_next += (corner-y_now)/factor
+    elif bp == "A": # top left
+        x_next += (-corner-x_now)/factor
+        y_next += (corner-y_now)/factor
+    elif bp == "C": # bottom right
+        x_next += (corner-x_now)/factor
+        y_next += (-corner-y_now)/factor
+    elif bp == "G": # bottom left
+        x_next += (-corner-x_now)/factor
+        y_next += (-corner-y_now)/factor
+    return x_next, y_next
 
 # expects a file containing a string of ACGT...
 with open(args.file, "r") as fh:
@@ -68,6 +84,7 @@ with open(args.file, "r") as fh:
                          [],
                          '.',
                          markersize=2,
+                         color='#035efc',
                          alpha=0.1)
         def animation(i):
             global x
@@ -79,18 +96,11 @@ with open(args.file, "r") as fh:
             step = 2000
             for bp in seq[(i-1)*step:(i*step)-1]:
                 if bp in ["A", "C", "G", "T"]:
-                    if bp == "T": # top right
-                        x_now += (corner-x_now)/factor
-                        y_now += (corner-y_now)/factor
-                    elif bp == "A": # top left
-                        x_now += (-corner-x_now)/factor
-                        y_now += (corner-y_now)/factor
-                    elif bp == "C": # bottom right
-                        x_now += (corner-x_now)/factor
-                        y_now += (-corner-y_now)/factor
-                    elif bp == "G": # bottom left
-                        x_now += (-corner-x_now)/factor
-                        y_now += (-corner-y_now)/factor
+                    x_now, y_now = calculateNext(bp,
+                                                 x_now,
+                                                 y_now,
+                                                 corner,
+                                                 factor)
                     x_buff.append(x_now)
                     y_buff.append(y_now)
             x += x_buff
@@ -101,42 +111,25 @@ with open(args.file, "r") as fh:
         if args.animateout:
             FFwriter = FFMpegWriter(fps=30, extra_args=['-vcodec', 'libx264'])
             ani.save('fractal.mp4', writer=FFwriter)
-            #ani.save('fractalout.gif', dpi=80, writer='imagemagick')
         else:
             plt.show()
     else:
-        plt.ion() # make plot interactive for continuous drawing
-        count = 0
+        # plot single image
         for bp in seq[args.start-1:end:args.step]:
             if bp in ["A", "C", "G", "T"]:
-                if bp == "T": # top right
-                    x_now += (corner-x_now)/factor
-                    y_now += (corner-y_now)/factor
-                elif bp == "A": # top left
-                    x_now += (-corner-x_now)/factor
-                    y_now += (corner-y_now)/factor
-                elif bp == "C": # bottom right
-                    x_now += (corner-x_now)/factor
-                    y_now += (-corner-y_now)/factor
-                elif bp == "G": # bottom left
-                    x_now += (-corner-x_now)/factor
-                    y_now += (-corner-y_now)/factor
+                x_now, y_now = calculateNext(bp,
+                                             x_now,
+                                             y_now,
+                                             corner,
+                                             factor)
                 x.append(x_now)
                 y.append(y_now)
-                count += 1
-                if (count % 10000) == 0:
-                    sys.stdout.write(".")
-                    sys.stdout.flush()
-                    ax.plot(x,
-                            y,
-                            '.', # points
-                            alpha=args.alpha,
-                            markersize=2,
-                            antialiased=True,
-                            color='#035efc')
-                            #color='#003366')
-                    plt.show()
-                    plt.pause(0.0001)
-                    x = []
-                    y = []
-
+        ax.plot(x,
+                y,
+                '.', # points
+                alpha=args.alpha,
+                markersize=2,
+                antialiased=True,
+                color='#035efc')
+                #color='#003366')
+        plt.show()

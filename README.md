@@ -1,4 +1,4 @@
 # fractalism
 Exploration of fractal properties of DNA
 
-<img src="https://cloud.githubusercontent.com/assets/20571319/19472124/b02cb394-9571-11e6-9a2b-737b28e6415c.png" />
+<img src="https://user-images.githubusercontent.com/20571319/82718696-5d9a6780-9ce7-11ea-9022-b591db2d0d1e.gif" />

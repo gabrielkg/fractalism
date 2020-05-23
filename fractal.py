@@ -3,13 +3,20 @@ import matplotlib.pyplot as plt
 import itertools, sys
 import matplotlib as mpl
 
-#mpl.use('Cairo')
+def close_window(evt):
+    exit()
 
 width=200
 corner=width/2
 
-fig = plt.figure(figsize=(15, 15))
-plt.ion() # interactive
+fig = plt.figure(figsize=(10, 10))
+
+# make plot interactive for continuous drawing
+plt.ion()
+
+# connect close window event to handler function
+fig.canvas.mpl_connect('close_event', close_window)
+
 ax = fig.add_axes([0, 0, 1, 1], frameon=False)
 ax.set_xlim(-corner, corner), ax.set_xticks([])
 ax.set_ylim(-corner, corner), ax.set_yticks([])
@@ -20,6 +27,7 @@ y_now = 0
 x=[]
 y=[]
 
+# for experiments
 factor=2
 
 # expects a file containing a string of ACGT...
@@ -44,7 +52,7 @@ with open(sys.argv[1], "r") as fh:
             x.append(x_now)
             y.append(y_now)
             count += 1
-            if (count % 100000) == 0:
+            if (count % 10000) == 0:
                 sys.stdout.write(".")
                 sys.stdout.flush()
                 ax.plot(x,

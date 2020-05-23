@@ -9,6 +9,7 @@ width=200
 corner=width/2
 
 fig = plt.figure(figsize=(15, 15))
+plt.ion() # interactive
 ax = fig.add_axes([0, 0, 1, 1], frameon=False)
 ax.set_xlim(-corner, corner), ax.set_xticks([])
 ax.set_ylim(-corner, corner), ax.set_yticks([])
@@ -46,13 +47,15 @@ with open(sys.argv[1], "r") as fh:
             if (count % 100000) == 0:
                 sys.stdout.write(".")
                 sys.stdout.flush()
+                ax.plot(x,
+                        y,
+                        '.', # points
+                        alpha=0.1,
+                        markersize=2,
+                        antialiased=True,
+                        color='#003366')
+                plt.show()
+                plt.pause(0.0001)
+                x = []
+                y = []
 
-ax.plot(x,
-        y,
-        '.', # points
-        alpha=0.1,
-        markersize=2,
-        antialiased=True,
-        color='#003366')
-
-plt.show()

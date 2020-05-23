@@ -6,7 +6,7 @@ import argparse
 from matplotlib.animation import FuncAnimation
 from matplotlib.animation import FFMpegWriter
 
-mpl.use("Agg")
+mpl.use("Qt5Agg")
 
 def close_window(evt):
     exit()

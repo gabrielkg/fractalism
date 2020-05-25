@@ -5,6 +5,7 @@ import matplotlib as mpl
 import argparse
 from matplotlib.animation import FuncAnimation
 from matplotlib.animation import FFMpegWriter
+from mpl_toolkits import mplot3d
 
 mpl.use("Qt5Agg")
 
@@ -53,7 +54,7 @@ fig = plt.figure(figsize=(args.figwidth,
 # connect close window event to handler function
 fig.canvas.mpl_connect('close_event', close_window)
 
-ax = fig.add_axes([0, 0, 1, 1], frameon=False)
+ax = fig.add_axes([0, 0, 1, 1], projection='3d')
 ax.set_xlim(-corner, corner), ax.set_xticks([])
 ax.set_ylim(-corner, corner), ax.set_yticks([])
 
